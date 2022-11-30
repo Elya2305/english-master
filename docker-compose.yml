@@ -1,0 +1,14 @@
+volumes:
+  pg_bot:
+
+services:
+  db:
+    image: postgres:14.1
+    environment:
+       POSTGRES_DB: "englishbot"
+       POSTGRES_USER: "postgres"
+       POSTGRES_PASSWORD: "postgres"
+    volumes:
+      - pg_bot:/var/lib/postgresql/data
+    ports:
+      - 5431:5432
