@@ -52,7 +52,7 @@ class SendPhotoWithPlaceholderAction : Action(waitForResponse = false) {
             .build()
         waitForResponse = false
         repeat = false
-        return MemorizableMessage(sendPhoto)
+        return MemorizableMessage(sendPhoto, "CARD")
     }
 
     private fun findWorkingImage(word: String): ByteArray? {

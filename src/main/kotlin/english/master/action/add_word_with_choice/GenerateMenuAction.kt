@@ -6,6 +6,7 @@ import english.master.client.WordDefinition
 import english.master.db.repo.CardRepo
 import english.master.domain.ReservedWords.NEXT
 import english.master.domain.UpdateWrapper
+import english.master.domain.message.MemorizableMessage
 import english.master.domain.message.MessageList
 import english.master.domain.message.SilentMessage
 import english.master.service.AddCardMenuService
@@ -45,25 +46,13 @@ class GenerateMenuAction : Action(repeat = true) {
         }
         return MessageList(
             listOf(
-                sendMessage(update, "==============MENU=============="),
-                initDefinitionsAndSendMenu(definitions, update),
+                sendMessage(update, "Here're all the definitions I found:"),
+                MemorizableMessage(initDefinitionsAndSendMenu(definitions, update), "MENU"),
                 SendMessage
                     .builder()
                     .chatId(update.chatId)
-                    .replyMarkup(nextKeyboard())
-                    .text("Here're all the definitions I found. Use this menu to generate description in the card. When you're done send \"Next\"")
-                    .build()
-            )
-        )
-    }
-
-    private fun handleMenuCallback(update: UpdateWrapper): MessageList {
-        return MessageList(
-            listOf(
-                handleMenu(update),
-                AnswerCallbackQuery
-                    .builder()
-                    .callbackQueryId(update.callbackQuery!!.id)
+                    .replyMarkup(menuService.buildKeyboard(middleName = "Add"))
+                    .text("Use this menu to generate description in the card. When you're done send \"Next\"")
                     .build()
             )
         )
@@ -87,8 +76,26 @@ class GenerateMenuAction : Action(repeat = true) {
             .chatId(update.chatId)
             .parseMode("HTML")
             .text(definition(update))
-            .replyMarkup(menuService.buildKeyboard())
+//            .replyMarkup(menuService.buildKeyboard())
             .build()
+    }
+
+    private fun handleMenuCallback(update: UpdateWrapper): MessageList {
+        val callback = AnswerCallbackQuery
+            .builder()
+            .callbackQueryId(update.callbackQuery!!.id)
+            .build()
+
+        val data = update.callbackQuery!!.data
+        if (data.startsWith("add")) {
+            val add = addOrRemoveDescription(update)
+            return MessageList(listOf(add, callback)) // todo do we need callback?
+        }
+        if (data.startsWith("next") || data.startsWith("back")) {
+            val list = swapDescription(update)
+            return MessageList(list)
+        }
+        return MessageList(listOf(callback))
     }
 
     private fun handleMenu(update: UpdateWrapper): Any {
@@ -105,22 +112,42 @@ class GenerateMenuAction : Action(repeat = true) {
             .build()
     }
 
-    private fun swapDescription(update: UpdateWrapper): Any {
+    private fun swapDescription(update: UpdateWrapper): List<EditMessageText> {
         val index = update.callbackQuery!!.data.split("#")[1].toInt()
+        val messageId = CacheService.getMessageId(update.userId, "MENU")
+        val nextDefinition = definition(update, index)
+        val buttonName = if (isDefinitionChosen(update, index)) "Remove" else "Add"
+        val mark = if (isDefinitionChosen(update, index)) "✅" else "☑"
 
-        return EditMessageText
+        val editMenuKeyboard = EditMessageText
             .builder()
             .chatId(update.chatId)
             .messageId(update.messageId)
             .parseMode("HTML")
-            .text(definition(update, index))
-            .replyMarkup(menuService.buildKeyboard(index))
+            .text("Use this menu to generate description in the card. When you're done send \"Next\"")
+            .replyMarkup(menuService.buildKeyboard(index, middleName = buttonName))
             .build()
+
+        val editDescription = EditMessageText
+            .builder()
+            .chatId(update.chatId)
+            .messageId(messageId)
+            .parseMode("HTML")
+            .text(nextDefinition)
+            .build()
+
+        return listOf(editMenuKeyboard, editDescription)
+    }
+
+    private fun isDefinitionChosen(update: UpdateWrapper, index: Int): Boolean {
+        val definitions = CacheService.getDefinitions(update.userId)
+        val chosenDefinitions = CacheService.getChosenDefinitions(update.userId)
+        return chosenDefinitions.contains(definitions!![index])
     }
 
     private fun addOrRemoveDescription(update: UpdateWrapper): Any {
         val index = update.callbackQuery!!.data.split("#")[1].toInt()
-        val messageId = CacheService.getMessageId(update.userId)
+        val messageId = CacheService.getMessageId(update.userId, "CARD")
         val chosenDefinitions = CacheService.getChosenDefinitions(update.userId)
         val definitions = CacheService.getDefinitions(update.userId)
 

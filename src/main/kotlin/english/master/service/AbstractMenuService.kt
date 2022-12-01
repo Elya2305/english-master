@@ -5,7 +5,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 abstract class AbstractMenuService(private val listSize: Int) {
 
-    fun buildKeyboard(index: Int = 0, extraIdentifier: String = ""): InlineKeyboardMarkup {
+    fun buildKeyboard(index: Int = 0, extraIdentifier: String = "", middleName: String = ""): InlineKeyboardMarkup {
         val identifier = if (extraIdentifier.isNotBlank()) "#$extraIdentifier" else ""
 
         val mid = button(middleButtonName(), "${middleButtonAction()}#${index}$identifier")

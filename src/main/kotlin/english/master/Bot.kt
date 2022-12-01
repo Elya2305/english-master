@@ -108,7 +108,11 @@ class Bot : TelegramLongPollingBot() {
         if (message is MemorizableMessage) {
             if (message.message is SendPhoto) {
                 val sentMessage = execute(message.message)
-                CacheService.putMessageId(update.userId, sentMessage.messageId)
+                CacheService.putMessageId(update.userId, sentMessage.messageId, message.identifier)
+            }
+            if (message.message is SendMessage) {
+                val sentMessage = execute(message.message)
+                CacheService.putMessageId(update.userId, sentMessage.messageId, message.identifier)
             }
         }
         if (message is SilentMessage) {
