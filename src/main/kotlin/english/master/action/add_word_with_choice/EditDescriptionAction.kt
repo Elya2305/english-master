@@ -1,12 +1,13 @@
 package english.master.action.add_word_with_choice
 
 import english.master.action.Action
+import english.master.action.Active
 import english.master.db.repo.CardRepo
+import english.master.domain.MemorizableMessage
+import english.master.domain.MessageList
 import english.master.domain.ReservedWords.NEXT
 import english.master.domain.ReservedWords.OK
 import english.master.domain.UpdateWrapper
-import english.master.domain.message.MemorizableMessage
-import english.master.domain.message.MessageList
 import english.master.util.CacheService
 import english.master.util.MessageUtils.generateInputMediaPhoto
 import english.master.util.equalsIgnoreCase
@@ -19,7 +20,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow
 import java.io.ByteArrayInputStream
 
-class EditDescriptionAction : Action(repeat = true) {
+class EditDescriptionAction : Action(nextToProcess = Active.CURRENT) {
     private val cardRepo = CardRepo()
 
     override fun process(update: UpdateWrapper): Any {
@@ -28,7 +29,7 @@ class EditDescriptionAction : Action(repeat = true) {
             return showNewCard(update)
         }
         if (OK.equalsIgnoreCase(msg)) {
-            repeat = false
+            nextToProcess = Active.NEXT
             return sendMessage(update, "Word added to your dictionary")
         }
 

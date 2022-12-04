@@ -14,6 +14,7 @@ class UpdateWrapper(val update: Update) {
             }
             return chatId!!
         }
+
     val messageId: Int
         get() {
             var messageId = update.message?.messageId

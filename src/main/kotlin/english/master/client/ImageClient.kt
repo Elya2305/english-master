@@ -1,8 +1,6 @@
 package english.master.client
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.apache.commons.io.IOUtils
-import java.net.URL
 
 class GoogleImageClient : AbstractClient() {
     private val apiKey = "wX1SlTpqfXDO5YQtBZnd_GUrSvddNjqKQrc5bxKV7To"
@@ -15,13 +13,7 @@ class GoogleImageClient : AbstractClient() {
     }
 
     fun downloadImage(url: String): ByteArray? {
-        return try {
-            IOUtils.toByteArray(
-                URL(url.split("?")[0] + "?fit=crop&w=300&h=300&dpr=10").openStream()
-            )
-        } catch (ex: Exception) {
-            null
-        }
+        return downloadSilently(url.split("?")[0] + "?fit=crop&w=300&h=300&dpr=10")
     }
 }
 

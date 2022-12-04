@@ -1,11 +1,9 @@
 package english.master
 
 import english.master.action.StartAction
-import english.master.domain.UpdateWrapper
-import english.master.domain.message.MemorizableMessage
-import english.master.domain.message.MessageList
-import english.master.domain.message.SilentMessage
+import english.master.domain.*
 import english.master.processors.FlowProcessor
+import english.master.processors.LookUpWordProcessor
 import english.master.processors.NewWordProcessor
 import english.master.processors.ShowCardsProcessor
 import english.master.util.CacheService
@@ -13,6 +11,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText
 import org.telegram.telegrambots.meta.api.objects.Update
@@ -34,6 +33,13 @@ class Bot : TelegramLongPollingBot() {
         try {
             println(update)
             println("message: ${update.message?.text}")
+
+            if (ReservedWords.EXIT == upd.text) {
+                removeActiveProcessor(upd)
+                exit(upd)
+                return
+            }
+
             if (isCommand(upd.text)) {
                 CacheService.cleanCache(upd.userId)
             }
@@ -50,6 +56,11 @@ class Bot : TelegramLongPollingBot() {
 
             if ("/new_card" == upd.text) {
                 resolveExecute(addActiveProcessor(upd, NewWordProcessor()).process(upd), upd)
+                return
+            }
+
+            if ("/look_up" == upd.text) {
+                resolveExecute(addActiveProcessor(upd, LookUpWordProcessor()).process(upd), upd)
                 return
             }
 
@@ -105,6 +116,9 @@ class Bot : TelegramLongPollingBot() {
         if (message is AnswerCallbackQuery) {
             execute(message)
         }
+        if (message is DeleteMessage) {
+            execute(message)
+        }
         if (message is MemorizableMessage) {
             if (message.message is SendPhoto) {
                 val sentMessage = execute(message.message)
@@ -121,6 +135,16 @@ class Bot : TelegramLongPollingBot() {
         if (message is MessageList) {
             message.messages.forEach { resolveExecute(it, update) }
         }
+    }
+
+    private fun exit(update: UpdateWrapper) {
+        execute(
+            SendMessage
+                .builder()
+                .chatId(update.chatId)
+                .text("Exited \uD83D\uDC4D")
+                .build()
+        )
     }
 
     private fun somethingWentWrong(update: UpdateWrapper) {

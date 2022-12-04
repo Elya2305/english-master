@@ -6,8 +6,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 abstract class Action(
     var next: Action? = null,
     var previous: Action? = null,
-    var repeat: Boolean = false,
-    var waitForResponse: Boolean = true
+    var waitForResponse: Boolean = true,
+    var nextToProcess: Active = Active.NEXT,
 ) {
 
     abstract fun process(update: UpdateWrapper): Any
@@ -29,4 +29,8 @@ abstract class Action(
     fun next(next: Action?) {
         this.next = next
     }
+}
+
+enum class Active {
+    CURRENT, PREVIOUS, NEXT
 }

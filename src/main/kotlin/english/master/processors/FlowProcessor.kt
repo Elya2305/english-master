@@ -1,6 +1,7 @@
 package english.master.processors
 
 import english.master.action.Action
+import english.master.action.Active
 import english.master.domain.UpdateWrapper
 
 abstract class FlowProcessor {
@@ -11,9 +12,15 @@ abstract class FlowProcessor {
         if (hasActive()) {
             val result = active!!.process(update)
             waitForResponse = active!!.waitForResponse
-            if (!active!!.repeat) {
-                active = active?.next
+
+            active = when(active!!.nextToProcess) {
+                Active.NEXT -> active!!.next
+                Active.CURRENT -> active
+                Active.PREVIOUS -> active!!.previous
             }
+//            if (!active!!.repeat) {
+//                active = active?.next
+//            }
             return result
         }
 

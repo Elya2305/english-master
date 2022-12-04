@@ -1,20 +1,21 @@
 package english.master.action.cards
 
 import english.master.action.Action
+import english.master.action.Active
 import english.master.db.repo.CardRepo
 import english.master.domain.UpdateWrapper
-import english.master.service.ViewCardMenuService
 import english.master.util.CacheService
-import english.master.util.MessageUtils
+import english.master.util.KeyboardHelper
+import english.master.util.MenuEntryData
+import english.master.util.MessageUtils.generateInputMediaPhoto
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia
 import org.telegram.telegrambots.meta.api.objects.InputFile
 import java.io.ByteArrayInputStream
 
-class GenerateCardAction(next: Action? = null) : Action(next, repeat = true) {
+class GenerateCardAction : Action(nextToProcess = Active.CURRENT) {
     private val cardRepo = CardRepo()
-    private lateinit var menuService: ViewCardMenuService
 
     override fun process(update: UpdateWrapper): Any {
         if (update.callbackQuery != null) {
@@ -37,10 +38,18 @@ class GenerateCardAction(next: Action? = null) : Action(next, repeat = true) {
         }
         val cards = cardRepo.findRandomNByUser(update.userId, number.toInt())
         CacheService.putCards(update.userId, cards)
-        menuService = ViewCardMenuService(number.toInt())
         return SendPhoto.builder()
             .photo(InputFile(ByteArrayInputStream(cards[0].frontImg), cards[0].word))
-            .replyMarkup(menuService.buildKeyboard(extraIdentifier = "front"))
+            .replyMarkup(
+                KeyboardHelper.buildKeyboard(
+                    MenuEntryData(
+                        identifier = "front",
+                        listSize = cards.size,
+                        midButtonName = "Flip",
+                        midButtonAction = "flip"
+                    )
+                )
+            )
             .chatId(update.chatId)
             .build()
     }
@@ -84,23 +93,33 @@ class GenerateCardAction(next: Action? = null) : Action(next, repeat = true) {
     private fun swapCard(update: UpdateWrapper, flip: Boolean = false): EditMessageMedia {
         val data = update.callbackQuery!!.data
         val currentIndex = data.split("#")[1].toInt()
-        val fromSide = data.split("#")[2]
         val card = CacheService.getCards(update.userId)!![currentIndex]
+        val fromFront = flipIdentifier(flip, data)
 
-        var fromFront = fromSide == "front"
-
-        if (flip) {
-            fromFront = !fromFront
-        }
-
-        val photo = MessageUtils.generateInputMediaPhoto(card, fromFront)
+        val photo = generateInputMediaPhoto(card, fromFront)
         return EditMessageMedia
             .builder()
             .chatId(update.chatId)
             .messageId(update.messageId)
             .media(photo)
-            .replyMarkup(menuService.buildKeyboard(currentIndex, if (fromFront) "front" else "back"))
+            .replyMarkup(
+                KeyboardHelper.buildKeyboard(
+                    MenuEntryData(
+                        index = currentIndex,
+                        identifier = if (fromFront) "front" else "back",
+                        listSize = CacheService.getCards(update.userId)!!.size,
+                        midButtonName = "Flip",
+                        midButtonAction = "flip"
+                    )
+                )
+            )
             .build()
+    }
+
+    private fun flipIdentifier(flip: Boolean, data: String): Boolean {
+        val fromSide = data.split("#")[2]
+        val fromFront = fromSide == "front"
+        return if (flip) !fromFront else fromFront
     }
 
     private fun isNotANumber(number: String): Boolean {

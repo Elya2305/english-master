@@ -4,6 +4,9 @@ import english.master.db.UserRecord
 import english.master.db.repo.UserRepo
 import english.master.domain.UpdateWrapper
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow
 
 class StartAction {
     private val userRepo = UserRepo()
@@ -22,8 +25,8 @@ class StartAction {
             .builder()
             .chatId(update.chatId)
             .text(
-            """
-                Welcome ${user.firstName}! I'm your new English guru. I can do not much stuff yet, but I'm improving my skills!
+                """
+                Hey ${user.firstName}! I'm your new English guru. I can do not much stuff yet, but I'm improving my skills!
                 
                 So, for now you can create word cards with 
                 /new_card command. I'll find some definitions and you'll choose the best ones for your card.
@@ -33,18 +36,28 @@ class StartAction {
                 /random_cards command. This function is pretty dumb for now, it'll just take random n 
                 cards. But in the future I'll watch your progress and generate more relevant cards 😎
                 
+                You can also quickly check definition of a word using /look_up. Note that it'll not generate a card
                 
                 ATTENTION! SPOILER ALERT!!!
                 What's coming next:
                 -> Card deletion
                 -> "Smart" cards' set generation (I'll need some time to learn this one though)
-                -> Words' pronunciations
                 -> Dictionary setting
                 -> Various quizzes that will help you to learn your words (suggestions are welcome)
                 -> TBD
                 
                 So let's get started!🚀
-            """.trimIndent())
+            """.trimIndent()
+            )
+            .replyMarkup(keyboard())
+            .build()
+    }
+
+    private fun keyboard(): ReplyKeyboardMarkup {
+        return ReplyKeyboardMarkup.builder()
+            .oneTimeKeyboard(true)
+            .resizeKeyboard(true)
+            .keyboardRow(KeyboardRow(listOf(KeyboardButton("EXIT"), KeyboardButton("NEXT"), KeyboardButton("OK"))))
             .build()
     }
 }

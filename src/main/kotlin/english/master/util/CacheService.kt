@@ -5,6 +5,7 @@ import english.master.db.CardRecord
 
 
 // todo replace with normal abstract cache
+// todo (2) maybe we don't need it at all
 object CacheService {
     private val MESSAGE_ID = "MESSAGE_ID"
     private val CARD = "CARD_ID"
@@ -17,8 +18,8 @@ object CacheService {
         cache["$MESSAGE_ID#$identifier#$userId"] = messageId
     }
 
-    fun getMessageId(userId: Long, identifier: String = ""): Int {
-        return cache["$MESSAGE_ID#$identifier#$userId"] as Int
+    fun getMessageId(userId: Long, identifier: String = ""): Int? {
+        return cache["$MESSAGE_ID#$identifier#$userId"] as Int?
     }
 
     fun putCard(userId: Long, card: CardRecord) {

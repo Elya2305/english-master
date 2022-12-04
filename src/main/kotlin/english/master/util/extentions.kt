@@ -10,3 +10,7 @@ fun <T> List<T>.takeMax(num: Int): List<T> {
 fun String.equalsIgnoreCase(str: String?): Boolean {
     return this.equals(str, ignoreCase = true)
 }
+
+fun String.containsIgnoreCase(str: String): Boolean {
+    return this.lowercase().contains(str.lowercase())
+}
