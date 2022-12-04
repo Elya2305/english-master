@@ -15,12 +15,13 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText
 import org.telegram.telegrambots.meta.api.objects.Update
+import java.lang.System.getenv
 
 class Bot : TelegramLongPollingBot() {
     private val processors: HashMap<Long, FlowProcessor> = HashMap()
 
     override fun getBotToken(): String {
-        return "5747700946:AAG77HAGuhEl7UDQ-G4RfvMthAOrXY3okvs"
+        return getenv("BOT_TOKEN")
     }
 
     override fun getBotUsername(): String {

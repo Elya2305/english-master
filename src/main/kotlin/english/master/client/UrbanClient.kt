@@ -1,11 +1,12 @@
 package english.master.client
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import java.lang.System.getenv
 
 
 class UrbanClient : AbstractClient() {
-    private val apiKey = "e371c7e3fbmsh8a5603b72d03c15p1e7c35jsnae8f16415a68"
-    private val apiHost = "mashape-community-urban-dictionary.p.rapidapi.com"
+    private val apiKey = getenv("URBAN_API_KEY")
+    private val apiHost = getenv("URBAN_API_HOST")
 
     fun getWordDefinitions(word: String): List<WordDefinition> {
         return get(

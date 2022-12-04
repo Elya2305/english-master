@@ -1,9 +1,10 @@
 package english.master.client
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import java.lang.System.getenv
 
-class GoogleImageClient : AbstractClient() {
-    private val apiKey = "wX1SlTpqfXDO5YQtBZnd_GUrSvddNjqKQrc5bxKV7To"
+class ImageClient : AbstractClient() {
+    private val apiKey = getenv("UNSPLASH_IMAGE_API_KEY")
 
     fun getImages(word: String): ImageList {
         return getSilently(

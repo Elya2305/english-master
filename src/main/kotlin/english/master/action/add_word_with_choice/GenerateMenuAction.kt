@@ -54,7 +54,6 @@ class GenerateMenuAction : Action(nextToProcess = Active.CURRENT) {
     }
 
     private fun sendDescriptionAndContinue(update: UpdateWrapper): SilentMessage {
-//        repeat = false
         nextToProcess = Active.NEXT
         waitForResponse = false
         val card = CacheService.getCard(update.userId)
@@ -225,13 +224,5 @@ class GenerateMenuAction : Action(nextToProcess = Active.CURRENT) {
     private fun format(str: String): String {
         return str.replace("[", "")
             .replace("]", "")
-    }
-
-    private fun nextKeyboard(): ReplyKeyboardMarkup {
-        return ReplyKeyboardMarkup.builder()
-            .oneTimeKeyboard(true)
-            .resizeKeyboard(true)
-            .keyboardRow(KeyboardRow(listOf(KeyboardButton("Next"))))
-            .build()
     }
 }

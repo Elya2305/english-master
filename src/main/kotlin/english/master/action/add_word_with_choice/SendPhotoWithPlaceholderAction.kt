@@ -3,7 +3,7 @@ package english.master.action.add_word_with_choice
 import english.master.action.Action
 import english.master.action.Active
 import english.master.client.BotClient
-import english.master.client.GoogleImageClient
+import english.master.client.ImageClient
 import english.master.db.CardRecord
 import english.master.db.repo.CardRepo
 import english.master.domain.UpdateWrapper
@@ -18,7 +18,7 @@ import java.io.ByteArrayInputStream
 import java.time.Instant
 
 class SendPhotoWithPlaceholderAction : Action(waitForResponse = false) {
-    private val imageClient = GoogleImageClient()
+    private val imageClient = ImageClient()
     private val cardRepo = CardRepo()
     private val botClient = BotClient()
 
