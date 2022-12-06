@@ -7,6 +7,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.telegram.telegrambots.meta.TelegramBotsApi
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession
+import java.lang.System.getenv
 
 fun main() {
     establishDbConnection()
@@ -16,7 +17,7 @@ fun main() {
 
 fun establishDbConnection() {
     Database.connect(
-        url = "jdbc:postgresql://localhost:5431/englishbot",
+        url = "jdbc:postgresql://${getenv("PROD_DB_HOST")}:${getenv("PROD_DB_PORT")}/${getenv("PROD_DB_NAME")}",
         driver = "org.postgresql.Driver",
         user = "postgres",
         password = "postgres"
