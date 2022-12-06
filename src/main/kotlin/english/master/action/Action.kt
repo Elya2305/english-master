@@ -18,7 +18,7 @@ abstract class Action(
             .builder()
             .chatId(update.chatId)
             .text(msg)
-        if (msg.contains("<")) { // todo
+        if (msg.contains("<")) { // todo for testing. will be replaced with normal regexp
             messageBuilder
                 .parseMode("HTML")
                 .build()

@@ -64,7 +64,6 @@ open class AbstractClient {
         }
     }
 
-
     fun <T> getSilently(url: String, clazz: Class<T>): T? {
         return try {
             return get(url, clazz)

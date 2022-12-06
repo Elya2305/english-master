@@ -70,7 +70,7 @@ class EditDescriptionAction : Action(nextToProcess = Active.CURRENT) {
         return ReplyKeyboardMarkup.builder()
             .oneTimeKeyboard(true)
             .resizeKeyboard(true)
-            .keyboardRow(KeyboardRow(listOf(KeyboardButton("OK"))))
+            .keyboardRow(KeyboardRow(listOf(KeyboardButton("EXIT"), KeyboardButton("NEXT"), KeyboardButton("OK"))))
             .build()
     }
 }

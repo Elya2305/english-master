@@ -2,10 +2,8 @@ package english.master.db.repo
 
 import english.master.db.UserRecord
 import english.master.db.Users
-import english.master.db.Users.toUserRecord
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 
@@ -34,10 +32,5 @@ class UserRepo {
             it[username] = record.username
             it[firstName] = record.firstName
         }
-    }
-
-    fun findAll(): List<UserRecord> {
-        return table.selectAll()
-            .map { it.toUserRecord() }
     }
 }

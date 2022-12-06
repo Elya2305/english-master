@@ -3,7 +3,6 @@ package english.master.db.repo
 import english.master.db.CardRecord
 import english.master.db.Cards
 import english.master.db.Cards.toCardRecord
-import org.jetbrains.exposed.sql.SortOrder.DESC
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.statements.api.ExposedBlob
@@ -36,16 +35,6 @@ class CardRepo {
                 it[backImage] = ExposedBlob(record.backImg)
                 it[frontImage] = ExposedBlob(record.frontImg)
             }
-        }
-    }
-
-    fun findLastByUser(userId: Long): CardRecord {
-        return transaction {
-            val row = table.select { Cards.user eq userId }
-                .orderBy(Cards.createdAt, DESC)
-                .limit(1)
-                .firstOrNull() ?: throw RuntimeException("Card not found")
-            return@transaction row.toCardRecord()
         }
     }
 

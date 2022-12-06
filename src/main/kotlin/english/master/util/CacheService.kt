@@ -4,7 +4,7 @@ import english.master.client.WordDefinition
 import english.master.db.CardRecord
 
 
-// todo replace with normal abstract cache
+// todo replace with normal abstract cache (this is just for testing purposes)
 // todo (2) maybe we don't need it at all
 object CacheService {
     private val MESSAGE_ID = "MESSAGE_ID"

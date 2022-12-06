@@ -18,9 +18,6 @@ abstract class FlowProcessor {
                 Active.CURRENT -> active
                 Active.PREVIOUS -> active!!.previous
             }
-//            if (!active!!.repeat) {
-//                active = active?.next
-//            }
             return result
         }
 

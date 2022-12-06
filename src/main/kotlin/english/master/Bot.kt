@@ -17,6 +17,7 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.Update
 import java.lang.System.getenv
 
+// todo replace print with normal logging
 class Bot : TelegramLongPollingBot() {
     private val processors: HashMap<Long, FlowProcessor> = HashMap()
 
