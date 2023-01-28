@@ -4,6 +4,6 @@ WORKDIR /home/gradle/source
 RUN gradle build
 
 FROM eclipse-temurin:17.0.2_8-jdk-focal
-COPY --from=gradleimage /home/gradle/source/build/libs/demo.jar /app/
+COPY --from=gradleimage "/home/gradle/source/build/libs/bot-english-master-1.0.0.jar" /app/
 WORKDIR /app
-ENTRYPOINT ["java", "-jar", "demo.jar"]
+ENTRYPOINT ["java", "-jar", "bot-english-master-1.0.0.jar"]
