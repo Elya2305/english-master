@@ -6,6 +6,7 @@ import english.master.processors.FlowProcessor
 import english.master.processors.LookUpWordProcessor
 import english.master.processors.NewWordProcessor
 import english.master.processors.ShowCardsProcessor
+import english.master.processors.TranslateWordProcessor
 import english.master.util.CacheService
 import org.telegram.telegrambots.bots.TelegramLongPollingBot
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery
@@ -63,6 +64,11 @@ class Bot : TelegramLongPollingBot() {
 
             if ("/look_up" == upd.text) {
                 resolveExecute(addActiveProcessor(upd, LookUpWordProcessor()).process(upd), upd)
+                return
+            }
+
+            if ("/translate" == upd.text) {
+                resolveExecute(addActiveProcessor(upd, TranslateWordProcessor()).process(upd), upd)
                 return
             }
 

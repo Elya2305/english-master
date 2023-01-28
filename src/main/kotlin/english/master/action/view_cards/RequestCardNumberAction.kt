@@ -1,4 +1,4 @@
-package english.master.action.cards
+package english.master.action.view_cards
 
 import english.master.action.Action
 import english.master.domain.UpdateWrapper

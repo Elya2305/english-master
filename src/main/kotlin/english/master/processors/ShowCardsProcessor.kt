@@ -1,7 +1,7 @@
 package english.master.processors
 
-import english.master.action.cards.GenerateCardAction
-import english.master.action.cards.RequestCardNumberAction
+import english.master.action.view_cards.GenerateCardAction
+import english.master.action.view_cards.RequestCardNumberAction
 
 class ShowCardsProcessor : FlowProcessor() {
 

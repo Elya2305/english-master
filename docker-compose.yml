@@ -12,3 +12,12 @@ services:
       - pg_bot:/var/lib/postgresql/data
     ports:
       - 5431:5432
+  lingva:
+    container_name: lingva
+    image: thedaviddelta/lingva-translate:latest
+    restart: unless-stopped
+    environment:
+      - default_source_lang=en
+      - default_target_lang=uk
+    ports:
+      - 3000:3000

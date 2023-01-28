@@ -7,20 +7,19 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.telegram.telegrambots.meta.TelegramBotsApi
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession
-import java.lang.System.getenv
 
 fun main() {
-    establishDbConnection()
+//    establishDbConnection()
     val botsApi = TelegramBotsApi(DefaultBotSession::class.java)
     botsApi.registerBot(Bot())
 }
 
 fun establishDbConnection() {
     Database.connect(
-        url = "jdbc:postgresql://${getenv("PROD_DB_HOST")}:${getenv("PROD_DB_PORT")}/${getenv("PROD_DB_NAME")}",
+        url = "jdbc:postgresql://localhost:5431/englishbot",
         driver = "org.postgresql.Driver",
-        user = getenv("PROD_DB_USERNAME"),
-        password = getenv("PROD_DB_PASSWORD")
+        user = "postgres",
+        password = "postgres"
     )
     transaction {
         SchemaUtils.createMissingTablesAndColumns(Users, Cards)

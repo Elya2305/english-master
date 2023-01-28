@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.commons.io.IOUtils
 import java.net.URI
+import java.net.URLEncoder
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpRequest.BodyPublishers.ofString
@@ -13,12 +14,11 @@ import java.time.Instant
 
 open class AbstractClient {
     private val mapper = ObjectMapper()
+    private val httpClient = HttpClient.newHttpClient()
 
     init {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     }
-
-    private val httpClient = HttpClient.newHttpClient()
 
 
     fun <T> get(url: String, clazz: Class<T>, headers: Map<String, String> = emptyMap()): T {
@@ -72,7 +72,8 @@ open class AbstractClient {
         }
     }
 
-    fun encodeTabs(str: String): String {
-        return str.replace(" ", "%20")
+    fun encode(str: String): String {
+        return URLEncoder.encode(str, "utf-8")
+            .replace("+", "%20");
     }
 }

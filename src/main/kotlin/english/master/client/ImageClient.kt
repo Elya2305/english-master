@@ -8,7 +8,7 @@ class ImageClient : AbstractClient() {
 
     fun getImages(word: String): ImageList {
         return getSilently(
-            "https://api.unsplash.com/search/photos?client_id=$apiKey&query=${encodeTabs(word)}",
+            "https://api.unsplash.com/search/photos?client_id=$apiKey&query=${encode(word)}",
             ImageList::class.java
         )!!
     }

@@ -10,7 +10,7 @@ class UrbanClient : AbstractClient() {
 
     fun getWordDefinitions(word: String): List<WordDefinition> {
         return get(
-            "https://api.urbandictionary.com/v0/define?term=${encodeTabs(word)}",
+            "https://api.urbandictionary.com/v0/define?term=${encode(word)}",
             WordDefinitionList::class.java,
             mapOf(
                 "X-RapidAPI-Key" to apiKey,
