@@ -1,16 +1,9 @@
-ARG BASE_IMAGE=eclipse-temurin:17.0.2_8-jdk-focal
-FROM ${BASE_IMAGE} AS builder
+FROM gradle:jdk17 as gradleimage
+COPY . /home/gradle/source
+WORKDIR /home/gradle/source
+RUN gradle build
 
-RUN mkdir /source
-WORKDIR /source
-
-# Build the app
-COPY . /source/
-RUN ./gradlew --no-daemon build bootJar
-
-FROM ${BASE_IMAGE}
-COPY --from=builder "/source/build/libs/*.jar" /app.jar
-
-CMD ["java", "-jar", "/app.jar"]
-
-EXPOSE 8080
+FROM eclipse-temurin:17.0.2_8-jdk-focal
+COPY --from=gradleimage /home/gradle/source/build/libs/demo.jar /app/
+WORKDIR /app
+ENTRYPOINT ["java", "-jar", "demo.jar"]
