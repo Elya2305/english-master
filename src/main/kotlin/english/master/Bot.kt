@@ -23,7 +23,8 @@ class Bot : TelegramLongPollingBot() {
     private val processors: HashMap<Long, FlowProcessor> = HashMap()
 
     override fun getBotToken(): String {
-        return getenv("BOT_TOKEN")
+//        return getenv("BOT_TOKEN")
+        return "5819830824:AAHFJj-TbdsRF0BaTBUvoWm3Gd04-jp2MfM"
     }
 
     override fun getBotUsername(): String {
