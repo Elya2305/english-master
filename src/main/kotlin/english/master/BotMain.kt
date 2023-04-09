@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.TelegramBotsApi
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession
 
 fun main() {
-//    establishDbConnection()
+    establishDbConnection()
     val botsApi = TelegramBotsApi(DefaultBotSession::class.java)
     botsApi.registerBot(Bot())
 }
