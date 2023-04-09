@@ -5,26 +5,29 @@ import english.master.action.Active
 import english.master.client.UrbanClient
 import english.master.client.WordDefinition
 import english.master.db.repo.CardRepo
-import english.master.domain.ReservedWords.NEXT
-import english.master.domain.UpdateWrapper
+import english.master.domain.Definitions
 import english.master.domain.MemorizableMessage
 import english.master.domain.MessageList
+import english.master.domain.ReservedWords.NEXT
 import english.master.domain.SilentMessage
-import english.master.util.*
+import english.master.domain.UpdateWrapper
+import english.master.util.CacheService
 import english.master.util.CacheService.getDefinitions
 import english.master.util.CacheService.getMessageId
+import english.master.util.KeyboardHelper
+import english.master.util.MenuEntryData
+import english.master.util.MessageUtils
+import english.master.util.equalsIgnoreCase
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow
 
 class GenerateMenuAction : Action(nextToProcess = Active.CURRENT) {
     private val dictionaryClient = UrbanClient()
     private val cardRepo = CardRepo()
-    private val MENU_NAVIGATION = "\uD83E\uDD13 Use this menu to generate description in the card. When you're done send \"Next\""
+    private val MENU_NAVIGATION =
+        "\uD83E\uDD13 Use this menu to generate description in the card. When you're done send \"Next\""
 
     override fun process(update: UpdateWrapper): Any {
         if (getDefinitions(update.userId) == null) {
@@ -63,7 +66,7 @@ class GenerateMenuAction : Action(nextToProcess = Active.CURRENT) {
     }
 
     private fun initDefinitionsAndSendMenu(definitions: List<WordDefinition>, update: UpdateWrapper): SendMessage {
-        CacheService.putDefinitions(update.userId, definitions)
+        CacheService.putDefinitions(update.userId, Definitions(update.text!!, definitions))
         CacheService.putChosenDefinitions(update.userId, ArrayList())
         return SendMessage
             .builder()
@@ -80,7 +83,7 @@ class GenerateMenuAction : Action(nextToProcess = Active.CURRENT) {
             .replyMarkup(
                 KeyboardHelper.buildKeyboard(
                     MenuEntryData(
-                        listSize = getDefinitions(update.userId)!!.size,
+                        listSize = getDefinitions(update.userId)!!.definitions.size,
                         midButtonName = "Add",
                         midButtonAction = "add"
                     )
@@ -124,7 +127,7 @@ class GenerateMenuAction : Action(nextToProcess = Active.CURRENT) {
                 KeyboardHelper.buildKeyboard(
                     MenuEntryData(
                         index = index,
-                        listSize = getDefinitions(update.userId)!!.size,
+                        listSize = getDefinitions(update.userId)!!.definitions.size,
                         midButtonName = buttonName,
                         midButtonAction = buttonName.lowercase()
                     )
@@ -147,8 +150,8 @@ class GenerateMenuAction : Action(nextToProcess = Active.CURRENT) {
         val index = update.callbackQuery!!.data.split("#")[1].toInt()
         val messageId = getMessageId(update.userId, "CARD")
         val chosenDefinitions = CacheService.getChosenDefinitions(update.userId)
-        val definitions = getDefinitions(update.userId)
-        val midButtonMame = if (chosenDefinitions.contains(definitions!![index])) {
+        val definitions = getDefinitions(update.userId)!!.definitions
+        val midButtonMame = if (chosenDefinitions.contains(definitions[index])) {
             chosenDefinitions.remove(definitions[index])
             "Add"
         } else {
@@ -176,7 +179,7 @@ class GenerateMenuAction : Action(nextToProcess = Active.CURRENT) {
                 KeyboardHelper.buildKeyboard(
                     MenuEntryData(
                         index = index,
-                        listSize = getDefinitions(update.userId)!!.size,
+                        listSize = getDefinitions(update.userId)!!.definitions.size,
                         midButtonName = midButtonMame,
                         midButtonAction = midButtonMame.lowercase()
                     )
@@ -196,9 +199,9 @@ class GenerateMenuAction : Action(nextToProcess = Active.CURRENT) {
     }
 
     private fun isDefinitionChosen(update: UpdateWrapper, index: Int): Boolean {
-        val definitions = getDefinitions(update.userId)
+        val definitions = getDefinitions(update.userId)!!.definitions
         val chosenDefinitions = CacheService.getChosenDefinitions(update.userId)
-        return chosenDefinitions.contains(definitions!![index])
+        return chosenDefinitions.contains(definitions[index])
     }
 
     private fun descriptionOfChosenCards(update: UpdateWrapper): String {
@@ -214,8 +217,8 @@ class GenerateMenuAction : Action(nextToProcess = Active.CURRENT) {
 
     private fun definition(update: UpdateWrapper, index: Int = 0): String {
         val mark = if (isDefinitionChosen(update, index)) "✅" else "☑"
-        val definitions = getDefinitions(update.userId)
-        val example = format(definitions!![index].example)
+        val definitions = getDefinitions(update.userId)!!.definitions
+        val example = format(definitions[index].example)
         var def = "$mark ${format(definitions[index].definition)}"
         if (example.isNotBlank()) def += "\n<i>[Example]:</i> $example"
         return def
