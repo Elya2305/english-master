@@ -24,7 +24,7 @@ class Bot : TelegramLongPollingBot() {
 
     override fun getBotToken(): String {
 //        return getenv("BOT_TOKEN")
-        return "5819830824:AAHFJj-TbdsRF0BaTBUvoWm3Gd04-jp2MfM"
+        return "5747700946:AAG77HAGuhEl7UDQ-G4RfvMthAOrXY3okvs"
     }
 
     override fun getBotUsername(): String {
