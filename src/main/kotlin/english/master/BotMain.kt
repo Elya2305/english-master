@@ -19,7 +19,7 @@ fun establishDbConnection() {
         url = "jdbc:postgresql://${System.getenv("PGHOST") ?: "localhost"}:${System.getenv("PGPORT")?: "5431"}/${System.getenv("PGDATABASE")?: "englishbot"}",
         driver = "org.postgresql.Driver",
         user = System.getenv("PGUSER")?: "postgres",
-        password = System.getenv("PROD_DB_PASSWORD")?: "postgres"
+        password = System.getenv("PGPASSWORD")?: "postgres"
     )
     transaction {
         SchemaUtils.createMissingTablesAndColumns(Users, Cards)
