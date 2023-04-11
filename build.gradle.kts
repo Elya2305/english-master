@@ -21,6 +21,8 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-java-time:0.40.1")
     implementation("org.postgresql:postgresql:42.5.0")
 
+    implementation("org.springframework.boot:spring-boot-starter-web:3.0.5")
+
     testImplementation(kotlin("test-junit"))
 }
 

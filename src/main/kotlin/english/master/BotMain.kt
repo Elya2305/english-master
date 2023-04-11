@@ -5,13 +5,19 @@ import english.master.db.Users
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 import org.telegram.telegrambots.meta.TelegramBotsApi
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession
 
-fun main() {
+@SpringBootApplication
+open class BotMain
+
+fun main(args: Array<String>) {
 //    establishDbConnection()
     val botsApi = TelegramBotsApi(DefaultBotSession::class.java)
     botsApi.registerBot(Bot())
+    runApplication<BotMain>(*args)
 }
 
 fun establishDbConnection() {
