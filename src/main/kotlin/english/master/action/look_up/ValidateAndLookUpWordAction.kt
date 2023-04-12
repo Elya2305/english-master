@@ -4,6 +4,7 @@ import english.master.action.Action
 import english.master.action.Active
 import english.master.client.UrbanClient
 import english.master.client.WordDefinition
+import english.master.domain.Definitions
 import english.master.domain.SilentMessage
 import english.master.domain.UpdateWrapper
 import english.master.util.CacheService
@@ -27,7 +28,7 @@ class ValidateAndLookUpWordAction : Action(waitForResponse = false) {
     }
 
     private fun initDefinitions(update: UpdateWrapper, definitions: List<WordDefinition>) {
-        CacheService.putDefinitions(update.userId, definitions)
+        CacheService.putDefinitions(update.userId, Definitions(update.text!!, definitions))
         CacheService.putChosenDefinitions(update.userId, ArrayList())
     }
 

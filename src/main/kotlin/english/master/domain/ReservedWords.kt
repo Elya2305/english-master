@@ -1,7 +1,7 @@
 package english.master.domain
 
 object ReservedWords {
-    val OK = "OK"
-    val NEXT = "NEXT"
-    val EXIT = "EXIT"
+    const val OK = "OK"
+    const val NEXT = "NEXT"
+    const val EXIT = "EXIT"
 }

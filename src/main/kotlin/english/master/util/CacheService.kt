@@ -2,6 +2,7 @@ package english.master.util
 
 import english.master.client.WordDefinition
 import english.master.db.CardRecord
+import english.master.domain.Definitions
 
 
 // todo replace with normal abstract cache (this is just for testing purposes)
@@ -30,12 +31,12 @@ object CacheService {
         return cache["$CARD#$userId"] as CardRecord
     }
 
-    fun putDefinitions(userId: Long, definitions: List<WordDefinition>) {
+    fun putDefinitions(userId: Long, definitions: Definitions) {
         cache["$DEFINITIONS#$userId"] = definitions
     }
 
-    fun getDefinitions(userId: Long): List<WordDefinition>? {
-        return cache["$DEFINITIONS#$userId"] as List<WordDefinition>?
+    fun getDefinitions(userId: Long): Definitions? {
+        return cache["$DEFINITIONS#$userId"] as Definitions?
     }
 
     fun putChosenDefinitions(userId: Long, definitions: ArrayList<WordDefinition>) {

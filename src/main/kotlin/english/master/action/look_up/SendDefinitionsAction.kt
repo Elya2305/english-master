@@ -15,9 +15,6 @@ import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow
 
 class SendDefinitionsAction : Action() {
 
@@ -33,7 +30,7 @@ class SendDefinitionsAction : Action() {
     }
 
     private fun isNewWord(update: UpdateWrapper): Boolean {
-        return !getDefinitions(update.userId)!![0].word.containsIgnoreCase(update.text!!)
+        return !getDefinitions(update.userId)!!.requestedWord.containsIgnoreCase(update.text!!)
     }
 
     private fun processPrevious(): SilentMessage {
@@ -44,7 +41,7 @@ class SendDefinitionsAction : Action() {
 
     private fun sendMenu(update: UpdateWrapper): Any {
         val menuEntry = MenuEntryData(
-            listSize = getDefinitions(update.userId)!!.size,
+            listSize = getDefinitions(update.userId)!!.definitions.size,
             midButtonIsPresent = false
         )
         val menu = SendMessage
@@ -82,7 +79,7 @@ class SendDefinitionsAction : Action() {
         val messageId = getMessageId(update.userId, "MENU")
         val nextDefinition = definition(update, index)
         val menuEntry = MenuEntryData(
-            listSize = getDefinitions(update.userId)!!.size,
+            listSize = getDefinitions(update.userId)!!.definitions.size,
             index = index,
             midButtonIsPresent = false
         )
@@ -97,8 +94,8 @@ class SendDefinitionsAction : Action() {
     }
 
     private fun definition(update: UpdateWrapper, index: Int = 0): String {
-        val definitions = getDefinitions(update.userId)
-        val example = format(definitions!![index].example)
+        val definitions = getDefinitions(update.userId)!!.definitions
+        val example = format(definitions[index].example)
         var def = "${index + 1}) ${format(definitions[index].definition)}"
         if (example.isNotBlank()) def += "\n<i>[Example]:</i> $example"
         return def
