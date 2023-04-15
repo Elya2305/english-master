@@ -4,7 +4,7 @@ import english.master.action.StartAction
 import english.master.domain.*
 import english.master.processors.FlowProcessor
 import english.master.processors.LookUpWordProcessor
-import english.master.processors.NewWordProcessor
+import english.master.processors.NewCardProcessor
 import english.master.processors.ShowCardsProcessor
 import english.master.processors.TranslateWordProcessor
 import english.master.util.CacheService
@@ -58,7 +58,7 @@ class Bot : TelegramLongPollingBot() {
             }
 
             if ("/new_card" == upd.text) {
-                resolveExecute(addActiveProcessor(upd, NewWordProcessor()).process(upd), upd)
+                resolveExecute(addActiveProcessor(upd, NewCardProcessor()).process(upd), upd)
                 return
             }
 

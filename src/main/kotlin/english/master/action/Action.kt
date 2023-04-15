@@ -12,7 +12,6 @@ abstract class Action(
 
     abstract fun process(update: UpdateWrapper): Any
 
-
     fun sendMessage(update: UpdateWrapper, msg: String): SendMessage {
         val messageBuilder = SendMessage
             .builder()
@@ -28,6 +27,16 @@ abstract class Action(
 
     fun next(next: Action?) {
         this.next = next
+    }
+
+    fun proceedToNext() {
+        nextToProcess = Active.NEXT
+        waitForResponse = false
+    }
+
+    fun repeatCurrent() {
+        nextToProcess = Active.CURRENT
+        waitForResponse = true
     }
 }
 

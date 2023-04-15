@@ -1,4 +1,4 @@
-package english.master.action.add_word_with_choice
+package english.master.action.common
 
 import english.master.action.Action
 import english.master.action.Active
@@ -20,7 +20,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow
 import java.io.ByteArrayInputStream
 
-class EditDescriptionAction : Action(nextToProcess = Active.CURRENT) {
+class EditCardDescriptionIfNeededAction : Action(nextToProcess = Active.CURRENT) {
     private val cardRepo = CardRepo()
 
     override fun process(update: UpdateWrapper): Any {

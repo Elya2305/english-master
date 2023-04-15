@@ -1,4 +1,4 @@
-package english.master.action.look_up
+package english.master.action.common
 
 import english.master.action.Action
 import english.master.domain.UpdateWrapper
@@ -11,7 +11,7 @@ class RequestWordAction : Action() {
         return SendMessage
             .builder()
             .chatId(update.chatId)
-            .text("\uD83E\uDD13 Please provide the word")
+            .text("\uD83E\uDD13 Yay, it's time for new words! Please provide the word")
             .build()
     }
 }

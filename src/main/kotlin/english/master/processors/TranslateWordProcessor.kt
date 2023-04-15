@@ -1,6 +1,6 @@
 package english.master.processors
 
-import english.master.action.translate.RequestWordAction
+import english.master.action.common.RequestWordAction
 import english.master.action.translate.TranslateAction
 
 class TranslateWordProcessor : FlowProcessor() {

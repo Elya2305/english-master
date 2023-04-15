@@ -23,7 +23,7 @@ class ValidateAndLookUpWordAction : Action(waitForResponse = false) {
             return sendMessage(update, "Sorry, I can't find this word")
         }
         initDefinitions(update, definitions)
-        goOn()
+        proceedToNext()
         return SilentMessage()
     }
 
@@ -37,14 +37,9 @@ class ValidateAndLookUpWordAction : Action(waitForResponse = false) {
         waitForResponse = true
     }
 
-    private fun goOn() {
-        nextToProcess = Active.NEXT
-        waitForResponse = false
-    }
-
     private fun isNotAWord(update: UpdateWrapper): Boolean {
         val word = update.text
-        return word == null || word.isBlank() ||
+        return word.isNullOrBlank() ||
                 !word.replace(" ", "").toCharArray().all { it.isLetter() }
     }
 }

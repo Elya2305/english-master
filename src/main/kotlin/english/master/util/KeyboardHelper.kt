@@ -3,6 +3,7 @@ package english.master.util
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
 
+// todo refactor
 object KeyboardHelper {
 
     fun buildKeyboard(data: MenuEntryData): InlineKeyboardMarkup {

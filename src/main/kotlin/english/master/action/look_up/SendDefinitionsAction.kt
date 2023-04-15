@@ -42,7 +42,8 @@ class SendDefinitionsAction : Action() {
     private fun sendMenu(update: UpdateWrapper): Any {
         val menuEntry = MenuEntryData(
             listSize = getDefinitions(update.userId)!!.definitions.size,
-            midButtonIsPresent = false
+            midButtonName = "Add to cards",
+            midButtonAction = "add_to_cards"
         )
         val menu = SendMessage
             .builder()
@@ -68,6 +69,9 @@ class SendDefinitionsAction : Action() {
         if (data.startsWith("next") || data.startsWith("back")) {
             return swapDescription(update)
         }
+        if (data.startsWith("add_to_cards")) {
+            proceedToNext()
+        }
         return AnswerCallbackQuery
             .builder()
             .callbackQueryId(update.callbackQuery!!.id)
@@ -81,7 +85,8 @@ class SendDefinitionsAction : Action() {
         val menuEntry = MenuEntryData(
             listSize = getDefinitions(update.userId)!!.definitions.size,
             index = index,
-            midButtonIsPresent = false
+            midButtonName = "Add to cards",
+            midButtonAction = "add_to_cards"
         )
         return EditMessageText
             .builder()

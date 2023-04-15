@@ -8,11 +8,11 @@ import english.master.domain.Definitions
 // todo replace with normal abstract cache (this is just for testing purposes)
 // todo (2) maybe we don't need it at all
 object CacheService {
-    private val MESSAGE_ID = "MESSAGE_ID"
-    private val CARD = "CARD_ID"
-    private val CARDS = "CARDS"
-    private val DEFINITIONS = "DEFINITIONS_ID"
-    private val CHOSEN_DEFINITIONS = "CHOSEN_DEFINITIONS"
+    private const val MESSAGE_ID = "MESSAGE_ID"
+    private const val CARD = "CARD_ID"
+    private const val CARDS = "CARDS"
+    private const val DEFINITIONS = "DEFINITIONS_ID"
+    private const val CHOSEN_DEFINITIONS = "CHOSEN_DEFINITIONS"
     private val cache: HashMap<String, Any> = HashMap()
 
     fun putMessageId(userId: Long, messageId: Int, identifier: String = "") {

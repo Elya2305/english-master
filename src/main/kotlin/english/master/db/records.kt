@@ -12,7 +12,7 @@ data class CardRecord(
     val id: Int? = null,
     val userId: Long,
     val word: String,
-    val description: String,
+    val description: String = "",
     val backImg: ByteArray,
     val frontImg: ByteArray,
 )
