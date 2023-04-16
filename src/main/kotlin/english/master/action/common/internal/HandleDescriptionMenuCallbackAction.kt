@@ -3,16 +3,18 @@ package english.master.action.common.internal
 import english.master.action.Action
 import english.master.domain.MessageList
 import english.master.domain.UpdateWrapper
+import english.master.util.Button
 import english.master.util.CacheService
 import english.master.util.KeyboardHelper
-import english.master.util.MenuEntryData
+import english.master.util.KeyboardNavigationData
 import english.master.util.MessageUtils
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText
 
 class HandleDescriptionMenuCallbackAction : Action() {
-    private val MENU_NAVIGATION = "\uD83E\uDD13 Use this menu to generate description in the card. When you're done send \"Next\""
+    private val MENU_NAVIGATION =
+        "\uD83E\uDD13 Use this menu to generate description in the card. When you're done send \"Next\""
 
     override fun process(update: UpdateWrapper): Any {
 
@@ -46,12 +48,11 @@ class HandleDescriptionMenuCallbackAction : Action() {
             .parseMode("HTML")
             .text(MENU_NAVIGATION)
             .replyMarkup(
-                KeyboardHelper.buildKeyboard(
-                    MenuEntryData(
+                KeyboardHelper.buildNavigationKeyboard(
+                    KeyboardNavigationData(
+                        itemsSize = CacheService.getDefinitions(update.userId)!!.definitions.size,
                         index = index,
-                        listSize = CacheService.getDefinitions(update.userId)!!.definitions.size,
-                        midButtonName = buttonName,
-                        midButtonAction = buttonName.lowercase()
+                        middleButtons = listOf(Button(buttonName, "${buttonName.lowercase()}#${index}"))
                     )
                 )
             )
@@ -98,12 +99,11 @@ class HandleDescriptionMenuCallbackAction : Action() {
             .parseMode("HTML")
             .text(MENU_NAVIGATION)
             .replyMarkup(
-                KeyboardHelper.buildKeyboard(
-                    MenuEntryData(
+                KeyboardHelper.buildNavigationKeyboard(
+                    KeyboardNavigationData(
+                        itemsSize = CacheService.getDefinitions(update.userId)!!.definitions.size,
                         index = index,
-                        listSize = CacheService.getDefinitions(update.userId)!!.definitions.size,
-                        midButtonName = midButtonMame,
-                        midButtonAction = midButtonMame.lowercase()
+                        middleButtons = listOf(Button(midButtonMame, "${midButtonMame.lowercase()}#${index}"))
                     )
                 )
             )

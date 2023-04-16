@@ -4,13 +4,15 @@ import english.master.action.Action
 import english.master.domain.MemorizableMessage
 import english.master.domain.MessageList
 import english.master.domain.UpdateWrapper
+import english.master.util.Button
 import english.master.util.CacheService
 import english.master.util.KeyboardHelper
-import english.master.util.MenuEntryData
+import english.master.util.KeyboardNavigationData
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 
 class SendMenuWithInstructionsAction : Action() {
-    private val MENU_NAVIGATION = "\uD83E\uDD13 Use this menu to generate description in the card. When you're done send \"Next\""
+    private val MENU_NAVIGATION =
+        "\uD83E\uDD13 Use this menu to generate description in the card. When you're done send \"Next\""
 
     override fun process(update: UpdateWrapper): Any {
 
@@ -37,11 +39,10 @@ class SendMenuWithInstructionsAction : Action() {
             .builder()
             .chatId(update.chatId)
             .replyMarkup(
-                KeyboardHelper.buildKeyboard(
-                    MenuEntryData(
-                        listSize = CacheService.getDefinitions(update.userId)!!.definitions.size,
-                        midButtonName = "Add",
-                        midButtonAction = "add"
+                KeyboardHelper.buildNavigationKeyboard(
+                    KeyboardNavigationData(
+                        itemsSize = CacheService.getDefinitions(update.userId)!!.definitions.size,
+                        middleButtons = listOf(Button("Add", "add#0"))
                     )
                 )
             )

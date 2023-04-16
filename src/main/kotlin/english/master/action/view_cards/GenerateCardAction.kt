@@ -4,9 +4,12 @@ import english.master.action.Action
 import english.master.action.Active
 import english.master.db.repo.CardRepo
 import english.master.domain.UpdateWrapper
+import english.master.util.Button
 import english.master.util.CacheService
 import english.master.util.KeyboardHelper
-import english.master.util.MenuEntryData
+import english.master.util.KeyboardHelper.firstNavigationButton
+import english.master.util.KeyboardHelper.lastNavigationButton
+import english.master.util.KeyboardNavigationData
 import english.master.util.MessageUtils.generateInputMediaPhoto
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto
@@ -41,12 +44,12 @@ class GenerateCardAction : Action(nextToProcess = Active.CURRENT) {
         return SendPhoto.builder()
             .photo(InputFile(ByteArrayInputStream(cards[0].frontImg), cards[0].word))
             .replyMarkup(
-                KeyboardHelper.buildKeyboard(
-                    MenuEntryData(
-                        identifier = "front",
-                        listSize = cards.size,
-                        midButtonName = "Flip",
-                        midButtonAction = "flip"
+                KeyboardHelper.buildNavigationKeyboard(
+                    KeyboardNavigationData(
+                        firstButton = firstNavigationButton(0, "front"),
+                        lastButton = lastNavigationButton(0, "front"),
+                        itemsSize = cards.size,
+                        middleButtons = listOf(Button("Flip", "flip#0"))
                     )
                 )
             )
@@ -97,19 +100,21 @@ class GenerateCardAction : Action(nextToProcess = Active.CURRENT) {
         val fromFront = flipIdentifier(flip, data)
 
         val photo = generateInputMediaPhoto(card, fromFront)
+        val identifier = if (fromFront) "front" else "back"
+
         return EditMessageMedia
             .builder()
             .chatId(update.chatId)
             .messageId(update.messageId)
             .media(photo)
             .replyMarkup(
-                KeyboardHelper.buildKeyboard(
-                    MenuEntryData(
+                KeyboardHelper.buildNavigationKeyboard(
+                    KeyboardNavigationData(
+                        itemsSize = CacheService.getCards(update.userId)!!.size,
                         index = currentIndex,
-                        identifier = if (fromFront) "front" else "back",
-                        listSize = CacheService.getCards(update.userId)!!.size,
-                        midButtonName = "Flip",
-                        midButtonAction = "flip"
+                        firstButton = firstNavigationButton(currentIndex, identifier),
+                        lastButton = lastNavigationButton(currentIndex, identifier),
+                        middleButtons = listOf(Button("Flip", "flip#${currentIndex}#${identifier}"))
                     )
                 )
             )

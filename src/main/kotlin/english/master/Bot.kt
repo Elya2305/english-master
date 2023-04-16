@@ -3,6 +3,7 @@ package english.master
 import english.master.action.StartAction
 import english.master.domain.*
 import english.master.processors.FlowProcessor
+import english.master.processors.ListCardsProcessor
 import english.master.processors.LookUpWordProcessor
 import english.master.processors.NewCardProcessor
 import english.master.processors.ShowCardsProcessor
@@ -47,6 +48,7 @@ class Bot : TelegramLongPollingBot() {
                 CacheService.cleanCache(upd.userId)
             }
 
+            // todo change if to map
             if ("/start" == upd.text) {
                 execute(StartAction().process(upd))
                 return
@@ -70,6 +72,10 @@ class Bot : TelegramLongPollingBot() {
             if ("/translate" == upd.text) {
                 resolveExecute(addActiveProcessor(upd, TranslateWordProcessor()).process(upd), upd)
                 return
+            }
+
+            if ("/list_cards" == upd.text) {
+                addActiveProcessor(upd, ListCardsProcessor())
             }
 
             val processor = getActiveProcessor(upd)

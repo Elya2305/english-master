@@ -6,10 +6,11 @@ import english.master.domain.MemorizableMessage
 import english.master.domain.MessageList
 import english.master.domain.SilentMessage
 import english.master.domain.UpdateWrapper
+import english.master.util.Button
 import english.master.util.CacheService.getDefinitions
 import english.master.util.CacheService.getMessageId
-import english.master.util.KeyboardHelper.buildKeyboard
-import english.master.util.MenuEntryData
+import english.master.util.KeyboardHelper.buildNavigationKeyboard
+import english.master.util.KeyboardNavigationData
 import english.master.util.containsIgnoreCase
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
@@ -40,17 +41,19 @@ class SendDefinitionsAction : Action() {
     }
 
     private fun sendMenu(update: UpdateWrapper): Any {
-        val menuEntry = MenuEntryData(
-            listSize = getDefinitions(update.userId)!!.definitions.size,
-            midButtonName = "Add to cards",
-            midButtonAction = "add_to_cards"
-        )
         val menu = SendMessage
             .builder()
             .chatId(update.chatId)
             .parseMode("HTML")
             .text(definition(update))
-            .replyMarkup(buildKeyboard(menuEntry))
+            .replyMarkup(
+                buildNavigationKeyboard(
+                    KeyboardNavigationData(
+                        itemsSize = getDefinitions(update.userId)!!.definitions.size,
+                        middleButtons = listOf(Button("Add to cards", "add_to_cards#0"))
+                    )
+                )
+            )
             .build()
 
         val prevMenuId = getMessageId(update.userId, "MENU")
@@ -82,18 +85,19 @@ class SendDefinitionsAction : Action() {
         val index = update.callbackQuery!!.data.split("#")[1].toInt()
         val messageId = getMessageId(update.userId, "MENU")
         val nextDefinition = definition(update, index)
-        val menuEntry = MenuEntryData(
-            listSize = getDefinitions(update.userId)!!.definitions.size,
-            index = index,
-            midButtonName = "Add to cards",
-            midButtonAction = "add_to_cards"
-        )
         return EditMessageText
             .builder()
             .chatId(update.chatId)
             .messageId(messageId)
             .parseMode("HTML")
-            .replyMarkup(buildKeyboard(menuEntry))
+            .replyMarkup(
+                buildNavigationKeyboard(
+                    KeyboardNavigationData(
+                        itemsSize = getDefinitions(update.userId)!!.definitions.size,
+                        middleButtons = listOf(Button("Add to cards", "add_to_cards#0"))
+                    )
+                )
+            )
             .text(nextDefinition)
             .build()
     }

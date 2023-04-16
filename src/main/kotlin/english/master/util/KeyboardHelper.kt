@@ -1,72 +1,57 @@
 package english.master.util
 
+import english.master.util.KeyboardHelper.firstNavigationButton
+import english.master.util.KeyboardHelper.lastNavigationButton
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
 
-// todo refactor
 object KeyboardHelper {
 
-    fun buildKeyboard(data: MenuEntryData): InlineKeyboardMarkup {
-        if (!data.midButtonIsPresent) {
-            return buildKeyboardWithoutMidButton(data)
-        }
-
-        if (data.isFirstEntry()) {
-            if (data.isOneEntry()) {
-                return InlineKeyboardMarkup.builder()
-                    .keyboardRow(listOf(disabledButton(), midButton(data), disabledButton()))
-                    .build()
-            }
-            return InlineKeyboardMarkup.builder()
-                .keyboardRow(listOf(disabledButton(), midButton(data), nextButton(data)))
-                .build()
-        }
-
-        if (data.isLastEntry()) {
-            return InlineKeyboardMarkup.builder()
-                .keyboardRow(listOf(backButton(data), midButton(data), disabledButton()))
-                .build()
-        }
-
+    fun buildKeyboard(buttons: List<Button>): InlineKeyboardMarkup {
         return InlineKeyboardMarkup.builder()
-            .keyboardRow(listOf(backButton(data), midButton(data), nextButton(data)))
+            .keyboardRow(buttons.map { button(it.text, it.callback) })
             .build()
     }
 
-    private fun buildKeyboardWithoutMidButton(data: MenuEntryData): InlineKeyboardMarkup {
-        if (data.isFirstEntry()) {
-            if (data.isOneEntry()) {
-                return InlineKeyboardMarkup.builder()
-                    .keyboardRow(listOf(disabledButton(), disabledButton()))
-                    .build()
-            }
-            return InlineKeyboardMarkup.builder()
-                .keyboardRow(listOf(disabledButton(), nextButton(data)))
-                .build()
-        }
+    fun buildNavigationKeyboard(keyboardData: KeyboardNavigationData): InlineKeyboardMarkup {
+        val firstButton = if (isFirstButtonDisabled(keyboardData)) disabledButton() else button(
+            keyboardData.firstButton.text,
+            keyboardData.firstButton.callback
+        )
 
-        if (data.isLastEntry()) {
-            return InlineKeyboardMarkup.builder()
-                .keyboardRow(listOf(backButton(data), disabledButton()))
-                .build()
-        }
+        val lastButton = if (isLastButtonDisabled(keyboardData)) disabledButton() else button(
+            keyboardData.lastButton.text,
+            keyboardData.lastButton.callback
+        )
+        val middleButtons = keyboardData.middleButtons.map { button(it.text, it.callback) }
 
         return InlineKeyboardMarkup.builder()
-            .keyboardRow(listOf(backButton(data), nextButton(data)))
+            .keyboardRow(listOf(firstButton, *middleButtons.toTypedArray(), lastButton))
             .build()
     }
 
-
-    private fun nextButton(data: MenuEntryData): InlineKeyboardButton {
-        return button("➡", "next#${data.index + 1}#${data.identifier}")
+    fun firstNavigationButton(index: Int, identifier: String? = null): Button {
+        return Button("⬅", "back#${index + 1}#${identifier}")
     }
 
-    private fun backButton(data: MenuEntryData): InlineKeyboardButton {
-        return button("⬅", "back#${data.index - 1}#${data.identifier}")
+    fun lastNavigationButton(index: Int, identifier: String? = null): Button {
+        return Button("➡", "next#${index + 1}#${identifier}")
     }
 
-    private fun midButton(data: MenuEntryData): InlineKeyboardButton {
-        return button(data.midButtonName!!, "${data.midButtonAction}#${data.index}#${data.identifier}")
+    private fun isFirstButtonDisabled(keyboardData: KeyboardNavigationData): Boolean {
+        val isFirstEntry = keyboardData.index == 0
+        val isOneEntry = keyboardData.itemsSize == 1
+        val isZeroEntry = keyboardData.itemsSize == 0
+
+        return isFirstEntry || isOneEntry || isZeroEntry
+    }
+
+    private fun isLastButtonDisabled(keyboardData: KeyboardNavigationData): Boolean {
+        val isLastEntry = keyboardData.index == keyboardData.itemsSize - 1
+        val isOneEntry = keyboardData.itemsSize == 1
+        val isZeroEntry = keyboardData.itemsSize == 0
+
+        return isLastEntry || isOneEntry || isZeroEntry
     }
 
     private fun disabledButton(): InlineKeyboardButton {
@@ -80,23 +65,15 @@ object KeyboardHelper {
     }
 }
 
-data class MenuEntryData(
-    val listSize: Int,
-    val midButtonIsPresent: Boolean = true,
-    val midButtonName: String? = null,
-    val midButtonAction: String? = null,
+data class KeyboardNavigationData(
+    val itemsSize: Int,
     val index: Int = 0,
-    val identifier: String = ""
-) {
-    fun isFirstEntry(): Boolean {
-        return index == 0
-    }
+    val firstButton: Button = firstNavigationButton(index),
+    val lastButton: Button = lastNavigationButton(index),
+    val middleButtons: List<Button> = listOf(),
+)
 
-    fun isOneEntry(): Boolean {
-        return index == listSize - 1
-    }
-
-    fun isLastEntry(): Boolean {
-        return index == listSize - 1
-    }
-}
+data class Button(
+    val text: String,
+    val callback: String,
+)

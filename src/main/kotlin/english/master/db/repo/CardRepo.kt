@@ -51,4 +51,18 @@ class CardRepo {
                 .map { it.toCardRecord() }
         }
     }
+
+    fun allByCreatedAt(userId: Long): List<CardRecord> {
+        return transaction {
+            table.select { table.user eq userId }.orderBy(table.createdAt).map { it.toCardRecord() }
+        }
+    }
+
+    fun findIndexedByCreatedAt(index: Long, userId: Long): CardRecord {
+        return transaction {
+            table.select { table.user eq userId }.orderBy(table.createdAt)
+                .limit(1, offset = index) // todo check
+                .map { it.toCardRecord() }.first()
+        }
+    }
 }
