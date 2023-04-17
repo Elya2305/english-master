@@ -39,6 +39,9 @@ class UpdateWrapper(val update: Update) {
     val callbackQuery: CallbackQuery?
         get() = update.callbackQuery
 
+    val callbackData: String?
+        get() = callbackQuery?.data
+
     val message: Message?
         get() = update.message
 

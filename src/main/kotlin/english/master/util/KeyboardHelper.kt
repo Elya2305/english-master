@@ -7,9 +7,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 object KeyboardHelper {
 
-    fun buildKeyboard(buttons: List<Button>): InlineKeyboardMarkup {
+    fun buildKeyboard(buttons: List<Button>, buttonPerRow: Int = 3): InlineKeyboardMarkup {
         return InlineKeyboardMarkup.builder()
-            .keyboardRow(buttons.map { button(it.text, it.callback) })
+            .keyboard(buttons.map { button(it.text, it.callback) }.chunked(buttonPerRow))
             .build()
     }
 

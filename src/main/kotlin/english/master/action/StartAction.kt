@@ -8,10 +8,10 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow
 
-class StartAction {
+class StartAction : Action() {
     private val userRepo = UserRepo()
 
-    fun process(update: UpdateWrapper): SendMessage {
+    override fun process(update: UpdateWrapper): SendMessage {
         val user = update.user
         userRepo.insertOrUpdate(
             UserRecord(
@@ -26,24 +26,18 @@ class StartAction {
             .chatId(update.chatId)
             .text(
                 """
-                Hey ${user.firstName}! I'm your new English guru. I can do not much stuff yet, but I'm improving my skills!
+                Hey ${user.firstName}! I'm your new English guru 🤓
                 
-                So, for now you can create word cards with /new_card command. I'll find some definitions and you'll choose the best ones for your card.
+                You can create word cards with /new_card command. I'll find some definitions and you'll choose the best ones for your card.
                 Also I want to warn you that I use urban dictionary underneath... if you know what I mean. 
                 
-                You can review the generated cards with /random_cards command. This function is pretty dumb for now, it'll just take random n cards. But in the future I'll watch your progress and generate more relevant cards 😎
+                To review X random generated cards use /random_cards command.
                 
-                You can also quickly check definition of a word using /look_up. Note that it'll not generate a card
-                
-                If you want to translate a word please use /translate command
-                
-                ATTENTION! SPOILER ALERT!!!
-                What's coming next:
-                -> Card deletion
-                -> "Smart" cards' set generation (I'll need some time to learn this one though)
-                -> Dictionary setting
-                -> Various quizzes that will help you to learn your words (suggestions are welcome)
-                -> Suggestions are welcome
+                Here're some other commands:
+                /look_up - to quickly check definition of a word 
+                /translate - to translate a word
+                /list_cards - to view a list of cards and make some changes to it. Available actions: delete
+                /menu - to list available commands
                 
                 So let's get started!🚀
             """.trimIndent()

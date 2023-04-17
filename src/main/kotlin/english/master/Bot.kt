@@ -1,14 +1,14 @@
 package english.master
 
-import english.master.action.StartAction
-import english.master.domain.*
+import english.master.action.MenuAction
+import english.master.domain.MemorizableMessage
+import english.master.domain.MessageList
+import english.master.domain.ReservedWords.EXIT
+import english.master.domain.SilentMessage
+import english.master.domain.UpdateWrapper
 import english.master.processors.FlowProcessor
-import english.master.processors.ListCardsProcessor
-import english.master.processors.LookUpWordProcessor
-import english.master.processors.NewCardProcessor
-import english.master.processors.ShowCardsProcessor
-import english.master.processors.TranslateWordProcessor
 import english.master.util.CacheService
+import english.master.util.Commands.getProcessor
 import org.telegram.telegrambots.bots.TelegramLongPollingBot
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
@@ -38,44 +38,16 @@ class Bot : TelegramLongPollingBot() {
             println(update)
             println("message: ${update.message?.text}")
 
-            if (ReservedWords.EXIT == upd.text) {
+            if (EXIT == upd.text) {
                 removeActiveProcessor(upd)
                 exit(upd)
                 return
             }
 
-            if (isCommand(upd.text)) {
+            if (isCommand(upd)) {
+                val command = getCommand(upd)
                 CacheService.cleanCache(upd.userId)
-            }
-
-            // todo change if to map
-            if ("/start" == upd.text) {
-                execute(StartAction().process(upd))
-                return
-            }
-
-            if ("/random_cards" == upd.text) {
-                resolveExecute(addActiveProcessor(upd, ShowCardsProcessor()).process(upd), upd)
-                return
-            }
-
-            if ("/new_card" == upd.text) {
-                resolveExecute(addActiveProcessor(upd, NewCardProcessor()).process(upd), upd)
-                return
-            }
-
-            if ("/look_up" == upd.text) {
-                resolveExecute(addActiveProcessor(upd, LookUpWordProcessor()).process(upd), upd)
-                return
-            }
-
-            if ("/translate" == upd.text) {
-                resolveExecute(addActiveProcessor(upd, TranslateWordProcessor()).process(upd), upd)
-                return
-            }
-
-            if ("/list_cards" == upd.text) {
-                addActiveProcessor(upd, ListCardsProcessor())
+                addActiveProcessor(upd, getProcessor(command))
             }
 
             val processor = getActiveProcessor(upd)
@@ -89,16 +61,26 @@ class Bot : TelegramLongPollingBot() {
                 return
             }
 
-            iDontUnderstandYou(upd)
+            execute(MenuAction().process(upd))
         } catch (ex: Exception) {
             ex.printStackTrace()
             somethingWentWrong(upd)
         }
     }
 
-    private fun isCommand(text: String?): Boolean {
-        val isCommand = text?.startsWith("/")
-        return isCommand != null && isCommand
+    private fun getCommand(update: UpdateWrapper): String {
+        return if (isCommand(update.text)) update.text!! else update.callbackData!!
+    }
+
+    private fun isCommand(update: UpdateWrapper): Boolean {
+        val textIsCommand = isCommand(update.text)
+        val callbackIsCommand = isCommand(update.callbackData)
+
+        return textIsCommand || callbackIsCommand
+    }
+
+    private fun isCommand(txt: String?): Boolean {
+        return txt?.startsWith("/") ?: false
     }
 
     private fun getActiveProcessor(update: UpdateWrapper): FlowProcessor? {
@@ -167,16 +149,6 @@ class Bot : TelegramLongPollingBot() {
                 .builder()
                 .chatId(update.chatId)
                 .text("Something went wrong")
-                .build()
-        )
-    }
-
-    private fun iDontUnderstandYou(update: UpdateWrapper) {
-        execute(
-            SendMessage
-                .builder()
-                .chatId(update.chatId)
-                .text("I don't understand you \uD83D\uDE15")
                 .build()
         )
     }

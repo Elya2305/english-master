@@ -28,7 +28,7 @@ abstract class FlowProcessor(private val initialActive: Action) {
         throw RuntimeException("The flow is over") // todo send menu ?
     }
 
-    fun <T : Action> jumpTo(clazz: KClass<T>) {
+    private fun <T : Action> jumpTo(clazz: KClass<T>) {
         var newActive = initialActive
         while (newActive::class != clazz) {
             newActive = newActive.next ?: throw RuntimeException("Can't jump to $clazz as it's not in the flow")
