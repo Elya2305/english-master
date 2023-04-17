@@ -7,15 +7,15 @@ import english.master.action.add_word_with_choice.ValidateWordAction
 import english.master.action.common.EditCardDescriptionIfNeededAction
 
 
-class NewCardProcessor : FlowProcessor() {
+class NewCardProcessor(
+    action1: RequestWordAction = RequestWordAction(),
+    action2: ValidateWordAction = ValidateWordAction(),
+    action3: SendPhotoWithEmptyPlaceholderAction = SendPhotoWithEmptyPlaceholderAction(),
+    action4: SendCardMenuAction = SendCardMenuAction(),
+    action5: EditCardDescriptionIfNeededAction = EditCardDescriptionIfNeededAction(),
+) : FlowProcessor(action1) {
 
     init {
-        val action1 = RequestWordAction()
-        val action2 = ValidateWordAction()
-        val action3 = SendPhotoWithEmptyPlaceholderAction()
-        val action4 = SendCardMenuAction()
-        val action5 = EditCardDescriptionIfNeededAction()
-
         active = action1
         action1.next = action2
         action2.next = action3

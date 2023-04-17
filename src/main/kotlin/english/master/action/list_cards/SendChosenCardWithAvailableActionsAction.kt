@@ -1,36 +1,36 @@
 package english.master.action.list_cards
 
 import english.master.action.Action
-import english.master.db.repo.CardRepo
+import english.master.db.CardRecord
 import english.master.domain.UpdateWrapper
 import english.master.util.Button
+import english.master.util.CacheService
 import english.master.util.KeyboardHelper
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto
 import org.telegram.telegrambots.meta.api.objects.InputFile
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import java.io.ByteArrayInputStream
 
 class SendChosenCardWithAvailableActionsAction : Action() {
-    private val cardRepo = CardRepo()
 
     override fun process(update: UpdateWrapper): Any {
-        val index = Integer.parseInt(update.message!!.text).toLong() // todo validate
-        val card = cardRepo.findIndexedByCreatedAt(index, update.userId)
+        val card = CacheService.getCard(update.userId)
 
-        val sendPhoto = SendPhoto.builder()
-            .photo(InputFile(ByteArrayInputStream(card.frontImg), card.word))
+        return SendPhoto.builder()
+            .photo(InputFile(ByteArrayInputStream(card.backImg), card.word))
             .chatId(update.chatId)
             .caption(card.description)
             .parseMode("HTML")
-            .replyMarkup(
-                KeyboardHelper.buildKeyboard(
-                    listOf(
-                        Button("Swap", "delete#${card.id}"),
-                        Button("Delete", "delete#${card.id}")
-                    )
-                )
-            ) // todo
+            .replyMarkup(keyboardWithAvailableActions(card))
             .build()
+    }
 
-        return sendPhoto
+    private fun keyboardWithAvailableActions(card: CardRecord): InlineKeyboardMarkup {
+        return KeyboardHelper.buildKeyboard(
+            listOf(
+//                Button("Edit", "edit#${card.id}"), // todo
+                Button("Delete", "delete#${card.id}")
+            )
+        )
     }
 }

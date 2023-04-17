@@ -7,17 +7,16 @@ import english.master.action.look_up.SendDefinitionsAction
 import english.master.action.look_up.SendPhotoWithChosenDefinitionAction
 import english.master.action.look_up.ValidateAndLookUpWordAction
 
-
-class LookUpWordProcessor : FlowProcessor() {
+class LookUpWordProcessor(
+    action1: RequestWordAction = RequestWordAction(),
+    action2: ValidateAndLookUpWordAction = ValidateAndLookUpWordAction(),
+    action3: SendDefinitionsAction = SendDefinitionsAction(),
+    action4: SendPhotoWithChosenDefinitionAction = SendPhotoWithChosenDefinitionAction(),
+    action5: SendCardMenuAction = SendCardMenuAction(),
+    action6: EditCardDescriptionIfNeededAction = EditCardDescriptionIfNeededAction(),
+) : FlowProcessor(action1) {
 
     init {
-        val action1 = RequestWordAction()
-        val action2 = ValidateAndLookUpWordAction()
-        val action3 = SendDefinitionsAction()
-        val action4 = SendPhotoWithChosenDefinitionAction()
-        val action5 = SendCardMenuAction()
-        val action6 = EditCardDescriptionIfNeededAction()
-
         active = action1
         action1.next = action2
         action2.next = action3

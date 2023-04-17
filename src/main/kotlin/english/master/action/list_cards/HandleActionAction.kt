@@ -1,20 +1,40 @@
 package english.master.action.list_cards
 
 import english.master.action.Action
-import english.master.action.list_cards.internal.DeleteFlowProcessor
+import english.master.action.Active.CURRENT
 import english.master.domain.UpdateWrapper
+import english.master.processors.FlowProcessor
+import english.master.processors.JumpTo
+import english.master.processors.internal.DeleteFlowProcessor
 
-class HandleActionAction : Action() {
-    private val deleteFlowProcessor = DeleteFlowProcessor()
+class HandleActionAction : Action(nextToProcess = CURRENT) {
+    private var activeProcessor: FlowProcessor? = null
 
     override fun process(update: UpdateWrapper): Any {
-        val callback = update.callbackQuery?.message?.text
-        if (callback?.startsWith("swap") == true) {
+        if (isSwapAction(update)) {
             return sendMessage(update, "TBD")
         }
-        if (callback?.startsWith("delete") == true) {
-            return deleteFlowProcessor.process(update)
+        if (isDeleteAction(update)) {
+            activeProcessor = DeleteFlowProcessor()
         }
-        return sendMessage(update, "Please use provided keyboard")
+        if (activeProcessor == null) { // todo check
+            return JumpTo(ValidateIndexAndSaveCardAction::class)
+        }
+        if (activeProcessor!!.isOver()) {
+            return JumpTo(SendListOfCards::class)
+        }
+        val result = activeProcessor!!.process(update)
+        waitForResponse = activeProcessor!!.hasActive() // todo think about it later
+        return result
+    }
+
+    private fun isSwapAction(update: UpdateWrapper): Boolean {
+        val callback = update.callbackQuery?.data
+        return callback?.startsWith("swap") == true
+    }
+
+    private fun isDeleteAction(update: UpdateWrapper): Boolean {
+        val callback = update.callbackQuery?.data
+        return callback?.startsWith("delete") == true
     }
 }

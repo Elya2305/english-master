@@ -3,6 +3,8 @@ package english.master.db.repo
 import english.master.db.CardRecord
 import english.master.db.Cards
 import english.master.db.Cards.toCardRecord
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.statements.api.ExposedBlob
@@ -38,6 +40,12 @@ class CardRepo {
         }
     }
 
+    fun delete(id: Int) {
+        transaction {
+            table.deleteWhere { table.id eq id }
+        }
+    }
+
     fun count(userId: Long): Long {
         return transaction {
             return@transaction table.select { table.user eq userId }.count()
@@ -61,7 +69,7 @@ class CardRepo {
     fun findIndexedByCreatedAt(index: Long, userId: Long): CardRecord {
         return transaction {
             table.select { table.user eq userId }.orderBy(table.createdAt)
-                .limit(1, offset = index) // todo check
+                .limit(1, offset = index - 1)
                 .map { it.toCardRecord() }.first()
         }
     }
